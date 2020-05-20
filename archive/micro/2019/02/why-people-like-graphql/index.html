@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Why People Like GraphQL - Stephen Mizell</title>
+    <meta name="description" content="People like GraphQL, but I&#39;m unconvinced it&#39;s primarily for technical reasons. I think it&#39;s something more human-related.
+">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+        <meta name="twitter:card" content="summary">
+    
+
+    <meta name="twitter:creator" content="@Stephen_Mizell">
+    <meta name="og:url" content="/micro/2019/02/why-people-like-graphql/">
+    <meta name="og:title" content="Why People Like GraphQL - Stephen Mizell">
+    
+        <meta name="og:description" content="People like GraphQL, but I&#39;m unconvinced it&#39;s primarily for technical reasons. I think it&#39;s something more human-related.
+">
+    
+
+    <link rel="stylesheet" href="../../../../css/vendor/tachyons.min.css">
+    <link rel="stylesheet" href="../../../../css/site.css">
+    </head>
+
+<body class="sans-serif">
+    <div class="center pa3 pa4-ns mw7-ns near-black">
+        <header>
+  <h1 class="f4 mt0">
+    <a class="dim blue" href="../../../../index.html">Stephen Mizell</a>
+  </h1>
+
+        </header>
+        <main>
+  <div class="article pt3 f4-ns">
+    <h1 class="f1-ns measure-l f2 mb0-ns mt4-l">Why People Like GraphQL</h1>
+    <h2 class="f4 gray normal">February 15, 2019</h2>
+    
+    <div class="mt4 mt5-ns">
+      <p>People like GraphQL, but I&rsquo;m unconvinced it&rsquo;s primarily for technical reasons. I think it&rsquo;s something more human-related. People choose tools because they resolve some underlying frustration, and the current implementations of GraphQL solve some of the bigger frustrations people feel working with APIs.</p>
+<h1 id="the-beginning-of-the-web">The beginning of the web</h1>
+<p>Tim Berners-Lee <a href="https://www.w3.org/People/Berners-Lee/Kids.html#What">provides an answer</a> to the question &ldquo;What made you think of the WWW?&quot;:</p>
+<blockquote>
+<p>Well, I found it frustrating that in those days, there was different information on different computers, but you had to log on to different computers to get at it. Also, sometimes you had to learn a different program on each computer. So finding out how things worked was really difficult. Often it was just easier to go and ask people when they were having coffee.</p>
+</blockquote>
+<p>It&rsquo;s interesting—though not surprising—the web was born out of frustration. Berners-Lee was tired of writing software to interact with so many different systems. &ldquo;Can&rsquo;t we convert every information system so that it looks like part of some imaginary information system which everyone can read?&rdquo; he asked. He says this is how the web came to be.</p>
+<h1 id="githubs-reason-for-graphql">GitHub&rsquo;s reason for GraphQL</h1>
+<p>There have been lots of writing about technical reasons to choose it, but I believe those are secondary to the frustrations people feel working with APIs. Look at <a href="https://githubengineering.com/the-github-graphql-api/">why GitHub moved to GraphQL</a>.</p>
+<blockquote>
+<p>[We] heard from integrators that our REST API also wasn’t very flexible. It sometimes required two or three separate calls to assemble a complete view of a resource. It seemed like our responses simultaneously sent too much data and didn’t include data that consumers needed.</p>
+</blockquote>
+<p>The technical issue described here is what&rsquo;s called &ldquo;overfetching&rdquo; or &ldquo;underfetching.&rdquo; But if you read into the quote, you can almost hear their customers saying, &ldquo;I know what I want. Why do I have to do all this work to get it?&rdquo; Or better yet, &ldquo;Can&rsquo;t you convert all of your API resources so that they look like part of some imaginary information system which everyone can read?&rdquo;</p>
+<p>Each web API today feels different. They all have their own SDK, their own client, their own generated tools, and their own nuances for exposing data over HTTP. Even within them, it can feel repetitive requesting a list of resources to solve common goals. GraphQL tries to resolve this, and GitHub saw that.</p>
+<h1 id="graphql-unifies-a-fragmented-world">GraphQL unifies a fragmented world</h1>
+<p>GraphQL lets people think about data and how it&rsquo;s related. It saves developers from piecing together a list of resources to understand how to get related data. It allows consumers to forget about the nuances of HTTP methods. People ask for what they want and that&rsquo;s what they get. This comes with the cost of losing out on some of HTTP&rsquo;s time-tested superpowers, but for most people, it&rsquo;s worth the cost.</p>
+<h1 id="the-next-generation-of-web-apis">The next generation of web APIs</h1>
+<p>I hope the next step for web APIs will be to follow these steps and solve some of these frustrations. I think that step will be more pragmatic and more human-centered than it will be technically superior.</p>
+
+    </div>
+  </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

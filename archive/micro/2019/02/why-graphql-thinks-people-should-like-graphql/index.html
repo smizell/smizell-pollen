@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Why GraphQL Thinks People Should Like GraphQL - Stephen Mizell</title>
+    <meta name="description" content="People choose GraphQL because of the way it addresses common frustrations with web APIs. We&#39;ll explore some of these frustrations by looking at GraphQL&#39;s marketing to see why GraphQL thinks people should like GraphQL.
+">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+        <meta name="twitter:card" content="summary">
+    
+
+    <meta name="twitter:creator" content="@Stephen_Mizell">
+    <meta name="og:url" content="/micro/2019/02/why-graphql-thinks-people-should-like-graphql/">
+    <meta name="og:title" content="Why GraphQL Thinks People Should Like GraphQL - Stephen Mizell">
+    
+        <meta name="og:description" content="People choose GraphQL because of the way it addresses common frustrations with web APIs. We&#39;ll explore some of these frustrations by looking at GraphQL&#39;s marketing to see why GraphQL thinks people should like GraphQL.
+">
+    
+
+    <link rel="stylesheet" href="../../../../css/vendor/tachyons.min.css">
+    <link rel="stylesheet" href="../../../../css/site.css">
+    </head>
+
+<body class="sans-serif">
+    <div class="center pa3 pa4-ns mw7-ns near-black">
+        <header>
+  <h1 class="f4 mt0">
+    <a class="dim blue" href="../../../../index.html">Stephen Mizell</a>
+  </h1>
+
+        </header>
+        <main>
+  <div class="article pt3 f4-ns">
+    <h1 class="f1-ns measure-l f2 mb0-ns mt4-l">Why GraphQL Thinks People Should Like GraphQL</h1>
+    <h2 class="f4 gray normal">February 18, 2019</h2>
+    
+    <div class="mt4 mt5-ns">
+      <p>I <a href="https://smizell.me/micro/2019/02/why-people-like-graphql/">recently wrote</a> that I believe people choose GraphQL because of the way it addresses common frustrations with web APIs. I&rsquo;d like to take a look why GraphQL thinks people should like GraphQL by looking at their <a href="https://graphql.org/">marketing site</a>. Though they mention technical reasons throughout the page, they&rsquo;re clear about the pain points they try to resolve.</p>
+<h1 id="when-are-there-moments-of-frustration">When are there moments of frustration?</h1>
+<p>There is a moment in time right before a person decides to look for a solution where a frustration or need drives them to action. Good marketing will take people to these moments, tell a compelling story, and offer relief. <a href="https://basecamp.com/">Basecamp</a> is a company that does this well on their landing page.</p>
+<blockquote>
+<p>All growing businesses run into the same fundamental problems. Hair on fire, buried under email, stuff everywhere. The good news? Basecamp solves them.</p>
+</blockquote>
+<p>Instead of focusing on their product, Basecamp focuses on the frustrations people feel when dealing notifications coming from all directions at work. They want to help create a calmer work experience, and they do so by providing a project management tool. These moments of frustration tell us why they think people should like Basecamp.</p>
+<h1 id="the-frustrations-addressed-by-graphql">The frustrations addressed by GraphQL</h1>
+<p>The GraphQL landing page also takes this approach, though it&rsquo;s not as explicit. If we dig into what they are saying, we&rsquo;ll find the frustrating moments they feel GraphQL addresses. We&rsquo;ll look at the main points on the GraphQL landing page and consider what a person might be feeling before choosing GraphQL.</p>
+<h2 id="why-cant-i-have-more-control-over-the-api">&ldquo;Why can&rsquo;t I have more control over the API?&rdquo;</h2>
+<p>The <a href="https://graphql.org/#predictable-results">site says</a>, &ldquo;Ask for what you need, get exactly that.&rdquo; Client developers may be taken back to times when they had to sift through payloads looking for the data they needed. Though GraphQL results in smaller initial responses, I&rsquo;m not sure this is the driving factor for most. People know what data they need. Why should they deal with more? Why do they have to go through the extra work when they could use GraphQL and get what they ask for?</p>
+<h2 id="i-cant-figure-out-how-this-data-is-related">&ldquo;I can&rsquo;t figure out how this data is related.&rdquo;</h2>
+<p>&ldquo;Get many resources in a single request,&rdquo; <a href="https://graphql.org#/#single-request">they say</a>. But we&rsquo;ve had solutions for ages that do this. Why is GraphQL different? They give us a hint.</p>
+<blockquote>
+<p>GraphQL queries access not just the properties of one resource but also smoothly follow references between them.</p>
+</blockquote>
+<p>GraphQL tries to expose the interconnectedness of the data. For many web APIs, it&rsquo;s a difficult task to understand how all of resources are related, but with GraphQL, it&rsquo;s one of the primary ways you interact with and understand the data.</p>
+<h2 id="its-difficult-to-write-usable-and-helpful-docs">&ldquo;It&rsquo;s difficult to write usable and helpful docs.&rdquo;</h2>
+<p>When <a href="https://graphql.org/#type-system">they say</a>, &ldquo;Describe what’s possible with a type system,&rdquo; they are making a statement about what wasn&rsquo;t possible without types. You might have thought while reading API docs, &ldquo;I read it all, and I still don&rsquo;t know what I can <em>do</em> with this API.&rdquo; The type system gives developers direction and becomes it&rsquo;s own documentation.</p>
+<h2 id="my-tools-require-me-to-do-a-lot">&ldquo;My tools require me to do a lot.&rdquo;</h2>
+<p><a href="https://graphql.org/#powerful-tools">They say</a>, &ldquo;Move faster with powerful developer tools.&rdquo; They want to have tools that promote speed and agility in development while being simple to use. Instead of jumping between docs and tools to piece together multiple requests, GraphiQL lets you navigate the docs and build requests in the same tool. Most people didn&rsquo;t realize how badly they wanted this until they saw it.</p>
+<h2 id="its-hard-to-reliably-make-changes-to-my-api">&ldquo;It&rsquo;s hard to reliably make changes to my API.&rdquo;</h2>
+<p>It takes work to evolve an API. Most people reach for versioning as a way to manage API changes. It&rsquo;s one of the first discussions people have when starting a new API—&ldquo;How are we going to version our API? In the URL? Headers? Are the versions global?&rdquo; The GraphQL site addresses versioning in their <a href="https://graphql.org/learn/best-practices/#versioning">best practices</a>:</p>
+<blockquote>
+<p>When there&rsquo;s limited control over the data that&rsquo;s returned from an API endpoint, any change can be considered a breaking change, and breaking changes require a new version.</p>
+</blockquote>
+<p>In their <a href="https://graphql.org/#without-versions">landing page</a> they say, &ldquo;Evolve your API without versions.&rdquo; They want you to forget everything you know about versioning. Can you evolve REST APIs without versions? <a href="https://philsturgeon.uk/api/2018/05/02/api-evolution-for-rest-http-apis/">Sure</a>. But it&rsquo;s still uncommon to see, so much so that it&rsquo;s a main point of their marketing.</p>
+<h1 id="a-recipe-for-traditional-web-apis">A recipe for traditional web APIs</h1>
+<p>If you&rsquo;re building tooling for traditional web APIs, I feel you could focus on these same frustrations and address the same users who are switching to GraphQL. I&rsquo;d love to see people create tools and practices to address these issues within the REST paradigm—bonus points for working with common API best practices.</p>
+<p>There are many tradeoffs in the GraphQL vs. REST discussion that need to be worked through (read more <a href="https://blog.goodapi.co/rest-vs-graphql-a-critical-review-5f77392658e7">here</a> and <a href="https://philsturgeon.uk/api/2017/01/24/graphql-vs-rest-overview/">here</a>). Maybe we can find ways get the benefits of REST with the ease and simplicity of GraphQL.</p>
+
+    </div>
+  </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

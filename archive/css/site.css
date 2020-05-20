@@ -1,0 +1,37 @@
+pre {
+  padding: 1rem;
+  background-color: #f3f3f3;
+  color: #444;
+}
+
+.article code {
+  font-size: 0.9em;
+  background-color: #eee;
+}
+
+.article pre > code {
+  font-size: 0.8em;
+  background-color: #f3f3f3;
+}
+
+.article pre {
+  overflow-x: auto;
+}
+
+.article p {
+  line-height: 1.5;
+}
+
+.article ol, ul {
+  margin: 1.3em 0;
+  padding-left: 2em;
+}
+
+.article li {
+  line-height: 1.4em;
+  margin-bottom: 0.4em;
+}
+
+.article a {
+  color: #357edd;
+}

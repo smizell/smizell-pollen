@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>API Design and Beginners - Stephen Mizell</title>
+    <meta name="description" content="API design is a popular and important topic. I&#39;ve been thinking lately how it feels to beginners, and whether there are areas for improvement.
+">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+        <meta name="twitter:card" content="summary">
+    
+
+    <meta name="twitter:creator" content="@Stephen_Mizell">
+    <meta name="og:url" content="/micro/2019/03/api-design-and-beginners/">
+    <meta name="og:title" content="API Design and Beginners - Stephen Mizell">
+    
+        <meta name="og:description" content="API design is a popular and important topic. I&#39;ve been thinking lately how it feels to beginners, and whether there are areas for improvement.
+">
+    
+
+    <link rel="stylesheet" href="../../../../css/vendor/tachyons.min.css">
+    <link rel="stylesheet" href="../../../../css/site.css">
+    </head>
+
+<body class="sans-serif">
+    <div class="center pa3 pa4-ns mw7-ns near-black">
+        <header>
+  <h1 class="f4 mt0">
+    <a class="dim blue" href="../../../../index.html">Stephen Mizell</a>
+  </h1>
+
+        </header>
+        <main>
+  <div class="article pt3 f4-ns">
+    <h1 class="f1-ns measure-l f2 mb0-ns mt4-l">API Design and Beginners</h1>
+    <h2 class="f4 gray normal">March 13, 2019</h2>
+    
+    <div class="mt4 mt5-ns">
+      <p>I&rsquo;ve been working through <a href="https://www.htdp.org/"><em>How to Design Programs</em></a> recently. It&rsquo;s interesting to see how they walk people—especially newcomers—through the process of learning how to design programs. It got me thinking about how newcomers experience the world of API design.</p>
+<h1 id="design-first-and-beginners">Design-first and beginners</h1>
+<p>Many agree the design-first approach to API design is preferred—including experts and API design companies alike. The idea is to write an API definition like OpenAPI before writing a line of code. This stands in contrast to a code-first approach where API definitions are generated later from code. And though design-first is preferred, code-first is probably most common.</p>
+<p>Consider what a beginner would need for a design-first approach.</p>
+<ol>
+<li>Experience and knowledge for designing applications (more on this later)</li>
+<li>An understanding of common URL patterns used in the industry</li>
+<li>A firm grasp on how to use HTTP methods and status codes along with their many nuances</li>
+<li>Knowledge of designing JSON documents through JSON schema</li>
+<li>Familiarity with formats like OpenAPI or API Blueprint</li>
+<li>Exposure to tooling for these formats</li>
+</ol>
+<p>Beginners have to gain experience, knowledge, and understanding in API design before they can do design-first well. Good practices are spread across books, websites, and videos with varying degrees of consensus among practitioners on what truly is good. This takes lots of time and patience.</p>
+<p>A quick search of the web for &ldquo;how to design an API&rdquo; will give recommendations like using plural names in URLs and HTTP methods as defined, but these fail to give direction for good design. It&rsquo;s up to the beginner to sift through the noise.</p>
+<h1 id="pet-store-first-driven-api-design">Pet-store-first driven API design</h1>
+<p>I&rsquo;ve been working with APIs for several years now, and I&rsquo;m sorry to admit I still have to copy and paste the <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v3.0/petstore.yaml">Pet Store example</a> to start writing an OpenAPI document. The same is true for me and API Blueprint&rsquo;s <a href="https://apiblueprint.org/documentation/examples/polls-api.html">Polls example</a>. I still need some visible guidance on both the syntax but also what is possible to define for the API.</p>
+<p>But there is something deeper here than syntax. While these formats are great, they don&rsquo;t prescribe a way to design an API. You can design a wonderful API or a horrible API with any format.</p>
+<p>This feels similar to the way <em>How to Design Programs</em> considers program design more important than programming. We can&rsquo;t teach newcomers things like variables, functions, loops, classes, and so on and expect them to be able to design a good program. Rather, we should teach methods for coming up with a good design.</p>
+<h1 id="application-first-driven-api-design-instead">Application-first driven API design instead</h1>
+<p>We talk about writing API definitions first, but I don&rsquo;t think it&rsquo;s possible to design a good API without understanding how to design a good application (an API <em>is</em> a programming interface to an application after all). Conversely, a well-design application can be used to drive good API design. If this is true, beginners should begin learning how to design applications and only then learn how to make those applications work across the web by way of an interface. Design the application first, then write the API definition.</p>
+<p>It doesn&rsquo;t stop for beginners. This isn&rsquo;t something you move on from once you get good at it. This should be true for experts as well. Experts should be able to sit with domain experts and users and walk everyone through the design of an application before ever considering what the API looks like.</p>
+<h1 id="everyone-can-design-apis">Everyone can design APIs</h1>
+<p>The authors claim in the preface of <em>How to Design Programs</em> that &ldquo;everyone can design programs.&rdquo; They say the skills from program design can transcend industries. Good program design will shape a person&rsquo;s approach to any problems by giving them a systematic process for exploring the design. It makes me think the API design community could borrow these principles and practices to help lower the barrier of entry for newcomers.</p>
+<p>If you want to see a good explanation of this approach, check out the video <a href="https://www.youtube.com/watch?v=BleOgPhsdfc">How to teach programming to loved ones</a>. He goes through some of the reasoning behind how they teach programming design and then shows a demo of it in practice.</p>
+
+    </div>
+  </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

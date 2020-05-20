@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Application-Driven API Design - Stephen Mizell</title>
+    <meta name="description" content="When designing APIs, it&#39;s important to take a design-first approach to ensure the right API gets built. However, I don&#39;t think the first step should be to write an OpenAPI or API Blueprint document. I think it should be to design a working application.
+">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://smizell.me/images/application-driven-api-design.png">
+        <meta name="twitter:image:alt" content="Application-Driven API Design">
+    
+
+    <meta name="twitter:creator" content="@Stephen_Mizell">
+    <meta name="og:url" content="/micro/2019/03/application-driven-api-design/">
+    <meta name="og:title" content="Application-Driven API Design - Stephen Mizell">
+    
+        <meta name="og:description" content="When designing APIs, it&#39;s important to take a design-first approach to ensure the right API gets built. However, I don&#39;t think the first step should be to write an OpenAPI or API Blueprint document. I think it should be to design a working application.
+">
+    
+
+    <link rel="stylesheet" href="../../../../css/vendor/tachyons.min.css">
+    <link rel="stylesheet" href="../../../../css/site.css">
+    </head>
+
+<body class="sans-serif">
+    <div class="center pa3 pa4-ns mw7-ns near-black">
+        <header>
+  <h1 class="f4 mt0">
+    <a class="dim blue" href="../../../../index.html">Stephen Mizell</a>
+  </h1>
+
+        </header>
+        <main>
+  <div class="article pt3 f4-ns">
+    <h1 class="f1-ns measure-l f2 mb0-ns mt4-l">Application-Driven API Design</h1>
+    <h2 class="f4 gray normal">March 14, 2019</h2>
+    
+    <div class="mt4 mt5-ns">
+      <p>When designing APIs, it&rsquo;s important to take a design-first approach to ensure the right API gets built. However, I don&rsquo;t think the first step should be to write an OpenAPI or API Blueprint document. I think it should be to design a working application.</p>
+<p>To take this application-driven approach to API design, API designers should start the API design process by creating an application that allows them to explore the domain and try out the design all without considering data storage, web interactions, or architecture. It produces a better design and is a <a href="https://smizell.me/micro/2019/03/api-design-and-beginners/">better step for beginners to take</a>.</p>
+<h1 id="an-example-of-this-approach">An example of this approach</h1>
+<p>Let&rsquo;s say we&rsquo;ve been asked to design an API for managing tasks. We&rsquo;ll keep it basic for now. We&rsquo;ll say requirements are to provide a way to manage tasks that have a description and a way to mark them as complete. We&rsquo;ll need to filter the tasks on the their status. Instead of starting with an API description for this, we&rsquo;ll first write a tiny application in Python—any language would do.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+
+task_storage <span style="color:#f92672">=</span> []
+
+<span style="color:#a6e22e">@dataclass</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Task</span>:
+    description: str
+    is_complete: bool <span style="color:#f92672">=</span> False
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mark_task_complete</span>(task):
+    task<span style="color:#f92672">.</span>is_done <span style="color:#f92672">=</span> True
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mark_task_incomplete</span>(task):
+    task<span style="color:#f92672">.</span>is_complete <span style="color:#f92672">=</span> False
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">store_task</span>(task):
+    task_storage<span style="color:#f92672">.</span>append(task)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">all_tasks</span>():
+    <span style="color:#66d9ef">return</span> task_storage
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">completed_tasks</span>():
+    <span style="color:#66d9ef">return</span> [task <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> task_storage <span style="color:#66d9ef">if</span> task<span style="color:#f92672">.</span>is_complete]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">incomplete_tasks</span>():
+    <span style="color:#66d9ef">return</span> [task <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> task_storage <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> task<span style="color:#f92672">.</span>is_complete]
+</code></pre></div><p>At this point, we could drop into a <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">REPL</a> and explore the design. Does it feel right? Is our vocabulary correct? Are we missing some functionality? Through this we&rsquo;ll see operations that are safe and others that alter state and are unsafe. This is all useful knowledge that can drive the API design.</p>
+<p>Also look at all the things we&rsquo;re not doing in this step. We&rsquo;re not installing mock servers, JSON schema validators, or documentation tools. We&rsquo;re not forcing ourselves to think in the context of URLs and HTTP. We can push these details to later because—while important—they come second to the application design.</p>
+<h1 id="how-this-affects-beginners">How this affects beginners</h1>
+<p>Our code above would be simple enough to talk through with people completely new to programming. We would be able to discuss the problem and the domain with beginners and not have to start with details related to building an HTTP API. Once we have a good feel for our application, we can start asking the questions about how we might persist the data or make the functionality available over the web. It&rsquo;s a much better starting place than URLs and HTTP requests.</p>
+<p>I have a hunch that experienced API designers do this application design in their head as they write API definitions. They&rsquo;ve been through the process and used APIs enough to know what works and what doesn&rsquo;t. However, I&rsquo;ve found there is a lot to gain by writing applications first to drive the API design.</p>
+<h1 id="this-is-nothing-new">This is nothing new</h1>
+<p>This process for writing code to explore a domain isn&rsquo;t new. There is a great presentation called <a href="https://fsharpforfunandprofit.com/ddd/">Domain Modeling Made Functional</a> where the presenter walks through how he uses F# and static types to define the domain. He concludes, &ldquo;The design is the code and the code is the design.&rdquo; His point is that you can capture the domain in code and use the tools around F# to explore the design.</p>
+<p>We could do the same with API design if our first step is to define and explore the domain. If we can do this in code, we can give our application a test drive before ever thinking about the API specifics.</p>
+
+    </div>
+  </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

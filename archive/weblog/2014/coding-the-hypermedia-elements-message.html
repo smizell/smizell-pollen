@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<link href="https://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>
+    
+      Coding the Hypermedia Elements of a Message &middot; Stephen Mizell
+    
+  </title>
+
+<link rel="stylesheet" href="../../public/css/poole.css">
+<link rel="stylesheet" href="../../public/css/syntax.css">
+<link rel="stylesheet" href="../../public/css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../feed">
+</head>
+<body>
+
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<div class="sidebar" id="sidebar">
+<div class="sidebar-item">
+<p>I am Stephen Mizell, and this is my personal website.</p>
+</div>
+<nav class="sidebar-nav">
+<a class="sidebar-nav-item" href="coding-the-hypermedia-elements-message.html">Home</a>
+<a class="sidebar-nav-item" href="../../about.html">About</a>
+<a class="sidebar-nav-item" href="../../projects.html">Projects</a>
+<a class="sidebar-nav-item" href="../../feed">Feed (Atom)</a>
+</nav>
+<div class="sidebar-item">
+<p>
+&copy; 2019. All rights reserved.
+</p>
+</div>
+</div>
+
+<div class="wrap">
+<div class="masthead">
+<div class="container">
+<h3 class="masthead-title">
+<a href="../../index.html" title="Home">Stephen Mizell</a>
+<small>Watching the world go by too quickly</small>
+</h3>
+</div>
+</div>
+<div class="container content">
+<div class="post">
+<h1 class="post-title">Coding the Hypermedia Elements of a Message</h1>
+<span class="post-date">25 Mar 2014</span>
+<p>I recently wrote about the idea of <a href="converting-between-hypermedia-types.html">converting from one hypermedia type to another</a>, and how this was one goal of the <a href="https://github.com/smizell/hyperdescribe/">Hyperdescribe</a> project I’m working on. I’d like to look at another idea, which involves writing API code around hypermedia elements rather writing code for specific hypermedia formats.</p>
+<p>This is not too far from what we developers are already doing. We take our models, the properties of those models, add in some links, and generate a message in a hypermedia type of our choosing. What I’m proposing here is that we describe those entities, properties, and links in a standard format rather than a media type-specific format.</p>
+<p>In this article, I’m going to look at the common hypermedia elements, take a brief look at a few popular hypermedia types, and then hit on how this can be useful.</p>
+<h2 id="common-hypermedia-elements">Common Hypermedia Elements</h2>
+<p>This section will look at the most common elements in a hypermedia message. After this, I’ll hit on a few hypermedia formats to see how these elements fit in.</p>
+<h3 id="entities">Entities</h3>
+<p>Simply put, in hypermedia, an entity is anything that has identity. It can be something physical, like a car, or more abstract, like love. It can be real or it can be fictional. Some will refer to an entity as a resource or and others will call it a thing, and both of those bring with it the idea of identity.</p>
+<p>When creating a response from a hypermedia API, the server is returning some entity or collection of entities, whether it be a customer or a collection of customers. When your browser requested this page you are reading, it requested a hypermedia document that consists of a blog post. It told my server, “I want the blog post resource at this URL and I understand the <strong>text/html</strong> hypermedia format.” My server responded with the HTML representation of this entity, which you are probably viewing right now.</p>
+<h3 id="entity-properties">Entity Properties</h3>
+<p>Things that have identity also have properties. A customer will have a name, address, phone number, and so on. This blog post for instance has a title, published date, and body. When we build databases, (most of the time) we create a table for our entities and then columns with data about those entity. We do the same thing on the web with resources.</p>
+<h3 id="hypertext-links-and-controls">Hypertext Links and Controls</h3>
+<p>You’d be hard-pressed to find an API that does not have entities and properties, but not every API has links or controls. These links and controls are a key part to the hypermedia message, and are key elements to how the web works.</p>
+<p>In a hypermedia message, there are links that tell the client what other entities it can request. These links usually have a link relation that tells the client what kind of entity will be found when that link is requested.</p>
+<p>Additionally, some hypermedia messages have controls that tell the client what actions it can take while providing hints on how to take those actions. In HTML, for instance, you’d see these controls as <code class="highlighter-rouge">&lt;form&gt;</code> elements. These forms provide a template for building requests, and inform the client where to send the request along with what format to send it in.</p>
+<p>For a much more granular look at the factors around hypermedia links and controls, please look at Mike Amundsen’s document on <a href="http://amundsen.com/hypermedia/hfactor/">H Factors</a>.</p>
+<h2 id="examples">Examples</h2>
+<p>To get an idea for how these categories show up in hypermedia messages, let’s have a look at some examples.</p>
+<h3 id="html">HTML</h3>
+<p>Of course, HTML is a great example of a hypermedia type, which makes this page a good example message. As mentioned, this page is a blog post with a title, published date, and body text. It also has some extra, embedded entities, such as a collection of comments and individual comments themselves. It provides links to other entities on this site, along with links to other places on the web.</p>
+<h3 id="haljson">HAL+JSON</h3>
+<p>Have a look at the JSON example in the <a href="http://stateless.co/hal_specification.html">HAL spec</a>. This particular message is a collection of orders. We have some properties for this collection of orders, <code class="highlighter-rouge">currentlyProcessing</code> and <code class="highlighter-rouge">shippedToday</code>, along with embedded individual order entities in the <code class="highlighter-rouge">_embedded</code> object. HAL has another reserved property name <code class="highlighter-rouge">_links</code> for specifying hypermedia links, and you can see how that is used for the collection and for the embedded items.</p>
+<h3 id="collectionjson">Collection+JSON</h3>
+<p>Now check out the example from the <a href="http://amundsen.com/media-types/collection/examples/">Collection+JSON example page</a>.</p>
+<p>Like in the HAL example, this message is a collection of items. The collection entity has embedded entities that are friends, and there are links sprinkled throughout the document. Additionally, there is a control template used for adding items to this collection (with a POST request, according to the spec) and for updating an item in the list (with a PUT request).</p>
+<h3 id="siren">Siren</h3>
+<p>Finally, check out the <a href="https://github.com/kevinswiber/siren">Siren spec</a> for my last example. I won’t spend too much time here because the elements are so obvious. You’ll see entities, properties, links, and actions by name in the sample message.</p>
+<h2 id="how-is-this-helpful">How is This Helpful?</h2>
+<p>With this common thread running through all media types, there is a great opportunity to come up with a way of abstracting out these core elements to be used across servers and clients.</p>
+<p>On the server side, it allows us to build generic representers, which can then be converted to other media types. <a href="https://github.com/apotonick/roar">ROAR</a> aims at doing this, but uses Ruby classes and modules rather than a document format.</p>
+<p>On the client side, a generic client can be built that is able to understand several different media formats. There could be a method to “follow a link,” and the client would be able to do this in HAL+JSON, Collection+JSON, and so on.</p>
+<h2 id="in-conclusion">In Conclusion</h2>
+<p>I understand how this may seem like I’m trying to <a href="https://xkcd.com/927/">add a new standard</a> the list of hypermedia types. With Hyperdescribe, though, I am not proposing a new, better media type, but rather a way to describe the elements of the already-existing media types. I don’t desire developers to use Hyperdescribe instead of their favorite media type, but rather to use Hyperdescribe to augment how they interface with their media type. Doing so will allow us to build libraries for the servers and clients that will let us think about elements rather than specific media types.</p>
+</div>
+</div>
+</div>
+<label for="sidebar-checkbox" class="sidebar-toggle"></label>
+<script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48628301-1', 'smizell.com');
+      ga('send', 'pageview');
+    </script>
+</body>
+</html>

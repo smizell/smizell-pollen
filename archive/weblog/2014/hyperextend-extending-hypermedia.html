@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<link href="https://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>
+    
+      Extending Hypermedia with Hyperextend &middot; Stephen Mizell
+    
+  </title>
+
+<link rel="stylesheet" href="../../public/css/poole.css">
+<link rel="stylesheet" href="../../public/css/syntax.css">
+<link rel="stylesheet" href="../../public/css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../feed">
+</head>
+<body>
+
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<div class="sidebar" id="sidebar">
+<div class="sidebar-item">
+<p>I am Stephen Mizell, and this is my personal website.</p>
+</div>
+<nav class="sidebar-nav">
+<a class="sidebar-nav-item" href="hyperextend-extending-hypermedia.html">Home</a>
+<a class="sidebar-nav-item" href="../../about.html">About</a>
+<a class="sidebar-nav-item" href="../../projects.html">Projects</a>
+<a class="sidebar-nav-item" href="../../feed">Feed (Atom)</a>
+</nav>
+<div class="sidebar-item">
+<p>
+&copy; 2019. All rights reserved.
+</p>
+</div>
+</div>
+
+<div class="wrap">
+<div class="masthead">
+<div class="container">
+<h3 class="masthead-title">
+<a href="../../index.html" title="Home">Stephen Mizell</a>
+<small>Watching the world go by too quickly</small>
+</h3>
+</div>
+</div>
+<div class="container content">
+<div class="post">
+<h1 class="post-title">Extending Hypermedia with Hyperextend</h1>
+<span class="post-date">15 May 2014</span>
+<p>In the world of hypermedia, there are many opinions of what should or should not be in the responses of an API. Some designers consider resource semantics and actions to be out-of-band, so these elements are pushed to profiles and documentation. Others want these elements as part of the message, so we have media types that provide ways for including this information. In the midst of all of this, it’s sometimes hard to decide what hypermedia format fits the job.</p>
+<p>To help with this, I’ve created <a href="https://github.com/smizell/hyperextend">Hyperextend</a>, which is a library of hypermedia components that can be used for extending JSON hypermedia formats. It provides schemas for links, URI templates, actions, and queries. It also provides components for combing some of these, such as an action with a URI template for the URL.</p>
+<p>This library could then be used, for example, to add actions to <a href="http://stateless.co/hal_specification.html">HAL</a> documents by dropping them into the messages and pointing to the Hyperdescribe docs for <a href="https://github.com/smizell/hyperextend#action">actions</a>. HAL and other formats are designed to be extended upon, so this fits within many specs.</p>
+<p>Here is a HAL response being extended with a Hyperextend action.</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"_links"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"self"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/customers/4"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"next"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/customers/5"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"_actions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"edit"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Edit Customer"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/customers/4"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PUT"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"bodyParams"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"first_name"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"First Name"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"last_name"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Last Name"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>Hyperextend can also be used to extend profile formats and other documentation to allow for more formats to cover more ground.</p>
+<p>I’m also currently working on a project called <a href="http://hyperschema.org/">Hyperschema.org</a>, which is a standard vocabulary for describing hypermedia formats. Because I’ve broken out each media type into reusable components, these can also be reused to extend other formats. I mention this because it means you can also mix and match formats, such as using <a href="http://hyperschema.org/mediatypes/siren#/definitions/action">Siren actions</a> to extend HAL documents if you so desired.</p>
+<p>Hopefully this allows hypermedia formats to be more flexible and make it easier to solve problems where some formats didn’t seem like the right choice. If you have any questions or ideas, please add a Github issue or get in contact with me!</p>
+</div>
+</div>
+</div>
+<label for="sidebar-checkbox" class="sidebar-toggle"></label>
+<script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48628301-1', 'smizell.com');
+      ga('send', 'pageview');
+    </script>
+</body>
+</html>

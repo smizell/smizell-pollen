@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<link href="https://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>
+    
+      Thinking Through Hypermedia API Design &middot; Stephen Mizell
+    
+  </title>
+
+<link rel="stylesheet" href="../../public/css/poole.css">
+<link rel="stylesheet" href="../../public/css/syntax.css">
+<link rel="stylesheet" href="../../public/css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../feed">
+</head>
+<body>
+
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<div class="sidebar" id="sidebar">
+<div class="sidebar-item">
+<p>I am Stephen Mizell, and this is my personal website.</p>
+</div>
+<nav class="sidebar-nav">
+<a class="sidebar-nav-item" href="hypermedia-design.html">Home</a>
+<a class="sidebar-nav-item" href="../../about.html">About</a>
+<a class="sidebar-nav-item" href="../../projects.html">Projects</a>
+<a class="sidebar-nav-item" href="../../feed">Feed (Atom)</a>
+</nav>
+<div class="sidebar-item">
+<p>
+&copy; 2019. All rights reserved.
+</p>
+</div>
+</div>
+
+<div class="wrap">
+<div class="masthead">
+<div class="container">
+<h3 class="masthead-title">
+<a href="../../index.html" title="Home">Stephen Mizell</a>
+<small>Watching the world go by too quickly</small>
+</h3>
+</div>
+</div>
+<div class="container content">
+<div class="post">
+<h1 class="post-title">Thinking Through Hypermedia API Design</h1>
+<span class="post-date">18 Nov 2016</span>
+<p>In designing hypermedia APIs, I usually have to use a combination of description
+formats and tools to capture the right things at the right times. The context
+switching can be difficult, and I am sometimes left on my own when the tooling
+isn’t made for describing hypermedia APIs.</p>
+<p>I thought it would be interesting to not only share my thought process for how I
+design a hypermedia API, but do so by describing what I would like to see become
+possible in API-specific tooling.</p>
+<h2 id="the-design-process">The Design Process</h2>
+<p>I personally like to the think through the steps below when I’m designing a
+hypermedia API, and I usually jump around between them throughout the process.</p>
+<ul>
+<li>Define scenarios for interacting with the API</li>
+<li>Capture workflows that describe steps users may take</li>
+<li>Define semantics around the API</li>
+<li>Define basic implementation details</li>
+</ul>
+<p>It’s most important for me to think apart from HTTP methods, URLs, schemas, and
+other implementation details, as they may cloud my thinking. Once I have a clear
+picture of the API, I will then start plugging it into various protocols like
+HTTP, but not until the end of this process. You may think about things in a
+different order than I have here, and that’s OK. In my opinion, there is no
+right or wrong approach to this.</p>
+<h2 id="the-document-structure">The Document Structure</h2>
+<p>Let’s start by laying out a structure in YAML for our made-up format that
+lines up with the thought process I’ve outlined above. We’ll then walk through
+each step and fill in the important details along the way.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">workflows</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">definitions</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">protocols</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+<ul>
+<li><strong>Interactions</strong> include scenarios in the API, and capture snapshots of what
+the state of resources look like.</li>
+<li><strong>Workflows</strong> are paths through the API that a user may take to accomplish
+some specific work.</li>
+<li><strong>Definitions</strong> define various semantics for the API.</li>
+<li><strong>Protocols</strong> is the section where we map the application logic and semantics
+to existing application protocols like HTTP.</li>
+</ul>
+<p>As we think through these areas, let’s design an example API that allows for
+managing todos. We’re going to keep it very simple for the sake of brevity.</p>
+<h2 id="what-are-the-interactions-of-the-api">What Are the Interactions of the API?</h2>
+<p>The most common practice for designing APIs is to first think through either the
+resources in the API or the URLs in the API. However, this means right from
+the start we skip thinking about the application itself. For me, it’s most
+helpful if the logic is the first thing I think about.</p>
+<p>I also like for my resources to fall out as I shake the design and think through
+the edges rather than defining them at the start. This keeps me from getting to
+granular or defining more resources than I will need. It also forces me to
+surface all of my application functionality in the beginning rather than trying
+to figure out what is there.</p>
+<p>Here are the various interactions I want to capture in this API.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span>
+  <span class="na">viewTodoCollection</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">createTodoItem</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">viewTodoItem</span><span class="pi">:</span> <span class="pi">{}</span>
+  <span class="na">markTodoComplete</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+<h3 id="viewing-the-collection-of-todos">Viewing the Collection of Todos</h3>
+<p>We can now start thinking through different scenarios a user may encounter as
+they interact with the API. We’ll start by describing scenarios around viewing a
+collection of todos.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span>
+  <span class="na">viewTodoCollection</span><span class="pi">:</span>
+    <span class="na">description</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">The `item` link is only available when there are</span>
+      <span class="no">items found in the lookup.</span>
+    <span class="na">scenarios</span><span class="pi">:</span>
+      <span class="na">noTodos</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span>
+            <span class="na">getTodos</span><span class="pi">:</span> <span class="pi">[]</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">self</span>
+          <span class="na">actions</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">create-todo</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">success</span>
+      <span class="na">withTodo</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span>
+            <span class="na">getTodos</span><span class="pi">:</span>
+              <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">1</span>
+                <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+                <span class="na">completed</span><span class="pi">:</span> <span class="no">false</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">self</span>
+            <span class="pi">-</span> <span class="s">item</span>
+          <span class="na">actions</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">create-todo</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">success</span>
+</code></pre></div></div>
+<p>I consider these scenarios as a snapshot of interactions with API. These
+scenarios are very close
+to <a href="https://github.com/cucumber/cucumber/wiki/Gherkin">Gherkin</a> that let’s you
+describe behavior. I’m wanting to capture a small glimpse of that behavior as
+I’m thinking through interactions on a micro level.</p>
+<p>The <code class="highlighter-rouge">when</code> here sets the context for the given scenario. When I do this, I
+define what my database looks like (as defined by <code class="highlighter-rouge">storage</code> here) along with any
+data found in the request. My aim is to test a specific state to ensure it has
+the correct properties, links, and actions.</p>
+<p>The <code class="highlighter-rouge">then</code> section defines what I expect the state to look like in the given
+context. Specifically in a hypermedia API, I’m interested in what <code class="highlighter-rouge">links</code> and
+<code class="highlighter-rouge">actions</code> are present in the context. The presence and absence of these links
+and forms, which are commonly called affordances, define what a user can and
+cannot do.</p>
+<p>Finally, I’ve defined a status for each scenario. The statuses can later map
+back to protocol-specific statuses, but it’s still important for me to think
+through how the result of the scenario should be without implementation details.</p>
+<h3 id="creating-a-todo">Creating a Todo</h3>
+<p>I’ve written down a success and error scenario for the interaction to create a
+todo.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span>
+  <span class="c1"># ...</span>
+  <span class="na">createTodoItem</span><span class="pi">:</span>
+    <span class="na">scenarios</span><span class="pi">:</span>
+      <span class="na">badData</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">request</span><span class="pi">:</span>
+            <span class="na">data</span><span class="pi">:</span> <span class="pi">{}</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">collection</span>
+          <span class="na">actions</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">create-todo</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">unprocessable</span>
+      <span class="na">created</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">request</span><span class="pi">:</span>
+            <span class="na">data</span><span class="pi">:</span>
+              <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">collection</span>
+          <span class="na">actions</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">mark-complete</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">created</span>
+</code></pre></div></div>
+<p>When there is bad data, I am saying the request cannot be processed. I’m
+defining a link back to the collection and giving the user the create action
+again so the user may try to create their todo again.</p>
+<p>When good data is provided, though, I’m going to allow the user to go back to
+the collection of todos or mark the new todo complete. I’m also saying the
+status of this scenario is acknowledging the todo was created, which we know
+lines up with HTTP <code class="highlighter-rouge">201</code>. But again, I’m skipping implementation details for now.</p>
+<h3 id="viewing-a-todo-item">Viewing a Todo Item</h3>
+<p>I’ve defined how to view a list of todos and how to create a new todo, and now I
+need to define what an individual todo item looks like.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span>
+  <span class="c1"># ...</span>
+  <span class="na">viewTodoItem</span><span class="pi">:</span>
+    <span class="na">description</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Once an item has been completed, the `mark-complete`</span>
+      <span class="no">action is no longer available.</span>
+    <span class="na">scenarios</span><span class="pi">:</span>
+      <span class="na">incompleteTodo</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span>
+            <span class="na">getTodo</span><span class="pi">:</span>
+              <span class="na">id</span><span class="pi">:</span> <span class="s">1</span>
+              <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+              <span class="na">completed</span><span class="pi">:</span> <span class="no">false</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">collection</span>
+          <span class="na">actions</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">mark-complete</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">success</span>
+      <span class="na">completeTodo</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span>
+            <span class="na">getTodo</span><span class="pi">:</span>
+              <span class="na">id</span><span class="pi">:</span> <span class="s">1</span>
+              <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+              <span class="na">completed</span><span class="pi">:</span> <span class="no">true</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">collection</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">success</span>
+</code></pre></div></div>
+<p>There are two scenarios I’m concerned with here. I want to see the affordances
+for an incomplete todo and a complete todo. You can see here how I’m not
+allowing the user at this point to mark a completed item as incomplete once
+they’ve completed, though I may want to do so later.</p>
+<h3 id="marking-a-todo-complete">Marking a Todo Complete</h3>
+<p>Lastly, I’m going to define what it looks like when someone actually marks the
+todo item complete.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">interactions</span><span class="pi">:</span>
+  <span class="c1"># ...</span>
+  <span class="na">markTodoComplete</span><span class="pi">:</span>
+    <span class="na">scenarios</span><span class="pi">:</span>
+      <span class="na">success</span><span class="pi">:</span>
+        <span class="na">when</span><span class="pi">:</span>
+          <span class="na">storage</span><span class="pi">:</span>
+            <span class="na">getTodo</span><span class="pi">:</span>
+              <span class="na">id</span><span class="pi">:</span> <span class="s">1</span>
+              <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+              <span class="na">completed</span><span class="pi">:</span> <span class="no">false</span>
+        <span class="na">then</span><span class="pi">:</span>
+          <span class="na">links</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">self</span>
+            <span class="pi">-</span> <span class="s">collection</span>
+          <span class="na">status</span><span class="pi">:</span> <span class="s">success</span>
+</code></pre></div></div>
+<h2 id="what-are-the-common-workflows-for-the-api">What Are the Common Workflows for the API?</h2>
+<p>Though, I’ve defined all of the scenarios I’m interested right now, that may
+change as time goes on. I may even jump around during the initial design process
+and define scenarios as I think about them.</p>
+<p>Just a note before going on, you may actually think differently than I do when
+you’re designing an API, and that’s totally OK. You may want to start with this
+workflow section and move to describing the interactions of the API later.
+Either way, I do think the important thing is to think about how the API will be
+used before getting into details.</p>
+<p>In describing workflows, I want to be thinking through how my interactions start
+to fit together. I’ve captured this in part in the interactions, but now I want
+to be explicit in thinking through them. This step may even cause me to go back to the
+interactions above and make changes to make the workflows feel correct, so it’s
+a way to validate my thinking.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">workflows</span><span class="pi">:</span>
+  <span class="na">todoLifecycle</span><span class="pi">:</span>
+    <span class="na">description</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="no">Enter the API, create a todo item, and mark it complete.</span>
+    <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">enter</span><span class="pi">:</span> <span class="s">noTodos</span>
+      <span class="pi">-</span> <span class="na">submit</span><span class="pi">:</span> <span class="s">create-todo</span>
+        <span class="na">data</span><span class="pi">:</span>
+          <span class="na">body</span><span class="pi">:</span> <span class="s">Get milk</span>
+        <span class="na">interaction</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">createTodoItem</span>
+          <span class="na">scenario</span><span class="pi">:</span> <span class="s">created</span>
+      <span class="pi">-</span> <span class="na">submit</span><span class="pi">:</span> <span class="s">mark-complete</span>
+        <span class="na">interaction</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">markTodoComplete</span>
+          <span class="na">scenario</span><span class="pi">:</span> <span class="s">success</span>
+  <span class="na">viewItem</span><span class="pi">:</span>
+    <span class="na">description</span><span class="pi">:</span> <span class="s">View a todo item</span>
+    <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">enter</span><span class="pi">:</span> <span class="s">withTodo</span>
+      <span class="pi">-</span> <span class="na">follow</span><span class="pi">:</span> <span class="s">item</span>
+        <span class="na">interaction</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">viewTodoItem</span>
+          <span class="na">scenario</span><span class="pi">:</span> <span class="s">incompleteTodo</span>
+  <span class="na">goBack</span><span class="pi">:</span>
+    <span class="na">description</span><span class="pi">:</span> <span class="s">Ensure a user can go back to the todo collection</span>
+    <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">enter</span><span class="pi">:</span> <span class="s">withTodo</span>
+      <span class="pi">-</span> <span class="na">follow</span><span class="pi">:</span> <span class="s">item</span>
+        <span class="na">interaction</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">viewTodoItem</span>
+          <span class="na">scenario</span><span class="pi">:</span> <span class="s">incompleteTodo</span>
+      <span class="pi">-</span> <span class="na">follow</span><span class="pi">:</span> <span class="s">collection</span>
+        <span class="na">interaction</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">viewTodoCollection</span>
+          <span class="na">scenario</span><span class="pi">:</span> <span class="s">withTodo</span>
+</code></pre></div></div>
+<p>I’ve defined three workflows that I think capture most of the functionality of
+the API. If I find in this step that I’m not using affordances that I defined in
+my interactions, I may actually remove those. This helps me be concise in my
+design and remove any lose ends.</p>
+<p>The first workflow captures the entire todo lifecycle. We enter when there are
+no todos, create a todo, and then mark it complete. You can see how I have tied
+these steps back to scenarios in my interactions section.</p>
+<p>The second is for viewing an existing item. This is simple and obvious, but it’s
+helpful to write it down.</p>
+<p>Lastly, I’ve defined how the <code class="highlighter-rouge">collection</code> link is used, which is a way for the
+user to get back to their collection of todo items. That may have not been clear
+before, so hopefully this clears it up.</p>
+<h2 id="what-are-my-application-semantics">What Are My Application Semantics?</h2>
+<p>It’s helpful to start defining the semantics I’ve used throughout my thought
+process. Hopefully at this point I have the design solidified and feel confident
+in my choices.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">definitions</span><span class="pi">:</span>
+  <span class="c1"># Where a user enters the API</span>
+  <span class="na">entry</span><span class="pi">:</span> <span class="s">viewTodoCollection</span>
+  <span class="na">properties</span><span class="pi">:</span>
+    <span class="na">body</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="no">The body of a todo item describing the action to be taken</span>
+    <span class="na">completed</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="no">Defines whether or not a todo item has been marked as complete</span>
+  <span class="na">links</span><span class="pi">:</span>
+    <span class="na">self</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s">Link to current resource</span>
+      <span class="na">specHref</span><span class="pi">:</span> <span class="s">https://tools.ietf.org/html/rfc4287</span>
+    <span class="na">collection</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s">A collection of various items</span>
+      <span class="na">specHref</span><span class="pi">:</span> <span class="s">https://tools.ietf.org/html/rfc6573</span>
+    <span class="na">item</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s">An item in a collection</span>
+      <span class="na">specHref</span><span class="pi">:</span> <span class="s">https://tools.ietf.org/html/rfc6573</span>
+  <span class="na">actions</span><span class="pi">:</span>
+    <span class="na">create-todo</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s">Create a todo item</span>
+    <span class="na">mark-complete</span><span class="pi">:</span>
+      <span class="na">description</span><span class="pi">:</span> <span class="s">Mark a todo item as complete</span>
+</code></pre></div></div>
+<p>I’ve defined <code class="highlighter-rouge">properties</code> that are relevant to this API along with the <code class="highlighter-rouge">links</code>
+and <code class="highlighter-rouge">actions</code> I’ve used. This hopefully can be given to client designers and
+others as a simple list of semantics they may encounter when using the API.</p>
+<h2 id="how-does-the-design-map-to-existing-protocols">How Does the Design Map to Existing Protocols?</h2>
+<p>Now we can map our design to a protocol. This is the place we usually see
+tooling encouraging designers to begin. It’s of course not a bad thing to do so,
+however, I find it can force you to think about the wrong things too early, and
+may cause you to overlook functionality you need to explore.</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">protocols</span><span class="pi">:</span>
+  <span class="na">http</span><span class="pi">:</span>
+    <span class="na">todoCollection</span><span class="pi">:</span>
+      <span class="na">uriTemplate</span><span class="pi">:</span> <span class="s">/</span>
+      <span class="na">methods</span><span class="pi">:</span>
+        <span class="na">get</span><span class="pi">:</span> <span class="s">viewTodoCollection</span>
+        <span class="na">post</span><span class="pi">:</span> <span class="s">createTodoItem</span>
+    <span class="na">todoItem</span><span class="pi">:</span>
+      <span class="na">uriTemplate</span><span class="pi">:</span> <span class="s">/todos/{id}</span>
+      <span class="na">methods</span><span class="pi">:</span>
+        <span class="na">get</span><span class="pi">:</span> <span class="s">viewTodoItem</span>
+    <span class="na">markTodoComplete</span><span class="pi">:</span>
+      <span class="na">uriTemplate</span><span class="pi">:</span> <span class="s">/todos/{id}/mark-complete</span>
+      <span class="na">methods</span><span class="pi">:</span>
+        <span class="na">post</span><span class="pi">:</span> <span class="s">markTodoComplete</span>
+</code></pre></div></div>
+<h2 id="wrapping-it-up">Wrapping It Up</h2>
+<p>Just to bring it back around, notice that we did not think about resources, MVC,
+nouns, verbs, URLs, schemas, JSON, or HTTP until we were happy with the design.
+We naturally walked toward the implementation details of our API.</p>
+<p>The dream for me would be that once you had all of this designed out, you could
+use the document to drive your implementation. There is a lot of information
+that could be used for test and behavior driven development. If I could automate
+testing all of my interactions, scenarios, and workflows, I’d be really happy.</p>
+<p>Now, I believe you may be able to accomplish some of what I have here with a
+combination
+of <a href="https://apiblueprint.org/">API Blueprint</a>, <a href="http://alps.io/">ALPS</a>, and
+Cucumber. There are influences here as well
+from
+<a href="https://github.com/resource-blueprint/resource-blueprint">Resource Blueprint</a>.
+I’d love to see tools that walk API designers through capturing affordances, behavior,
+and workflows in a way that helps think through the design and drive tests and
+implementation.</p>
+<p>When it comes down it, I feel designing a hypermedia API is more difficult for
+newcomers than designing one that focuses on resource and HTTP first. To me,
+this is because the most popular tooling just isn’t geared toward hypermedia,
+and because hypermedia design requires extra thought to surface logic that
+drives application state. My hope is that we can start considering improvements
+to our tooling while making it simpler to define application logic through
+hypermedia.</p>
+</div>
+</div>
+</div>
+<label for="sidebar-checkbox" class="sidebar-toggle"></label>
+<script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48628301-1', 'smizell.com');
+      ga('send', 'pageview');
+    </script>
+</body>
+</html>

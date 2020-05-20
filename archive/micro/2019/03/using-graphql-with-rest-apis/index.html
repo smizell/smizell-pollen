@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Using GraphQL With REST APIs - Stephen Mizell</title>
+    <meta name="description" content="Maybe we don&#39;t have to choose between GraphQL and REST. Maybe we can get the benefits of both approaches.
+">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="https://smizell.me/images/using-graphql-with-rest-apis.png">
+        <meta name="twitter:image:alt" content="Using GraphQL With REST APIs">
+    
+
+    <meta name="twitter:creator" content="@Stephen_Mizell">
+    <meta name="og:url" content="/micro/2019/03/using-graphql-with-rest-apis/">
+    <meta name="og:title" content="Using GraphQL With REST APIs - Stephen Mizell">
+    
+        <meta name="og:description" content="Maybe we don&#39;t have to choose between GraphQL and REST. Maybe we can get the benefits of both approaches.
+">
+    
+
+    <link rel="stylesheet" href="../../../../css/vendor/tachyons.min.css">
+    <link rel="stylesheet" href="../../../../css/site.css">
+    </head>
+
+<body class="sans-serif">
+    <div class="center pa3 pa4-ns mw7-ns near-black">
+        <header>
+  <h1 class="f4 mt0">
+    <a class="dim blue" href="../../../../index.html">Stephen Mizell</a>
+  </h1>
+
+        </header>
+        <main>
+  <div class="article pt3 f4-ns">
+    <h1 class="f1-ns measure-l f2 mb0-ns mt4-l">Using GraphQL With REST APIs</h1>
+    <h2 class="f4 gray normal">March 20, 2019</h2>
+    
+    <div class="mt4 mt5-ns">
+      <p><a href="https://smizell.me/micro/2019/02/why-people-like-graphql/">People choose GraphQL</a> because of all the details it lets them forget about. It&rsquo;s tough to go back to modern REST approaches after working with the powerful patterns and well-built tools of the GraphQL ecosystem. But maybe we don&rsquo;t have to choose between GraphQL and REST. Maybe we can get the benefits of both approaches.</p>
+<p>To explore this, I&rsquo;ve worked on a proof of concept. I called it <a href="https://github.com/smizell/graphablejson">Graphable JSON</a>. It&rsquo;s a JavaScript library that takes a GraphQL query and lazily fetches all the requested data from a REST API by following links. It allows API consumers to move beyond resources, URLs, HTTP methods, and status codes by specifying their required data in GraphQL&rsquo;s query syntax. All of this happens in the client rather than sending the query to an API somewhere. This is an important distinction to remember.</p>
+<h1 id="an-example-of-how-it-works">An example of how it works</h1>
+<p>I feel it&rsquo;s easiest to explain this approach by way of examples. We&rsquo;ll use an <a href="https://graphablejsonapi.glitch.me/">order API</a> for these examples, and we&rsquo;ll write a GraphQL query to fetch data from it. The API is a REST API with no GraphQL endpoint, so the Graphable JSON library will have to figure out how to get the data on its own.</p>
+<p>The API is made up of several different examples for representing order data. For each example, our GraphQL query will be the same. This will show that we can have different kinds of responses and representations of data and evolve the API without breaking the client. We&rsquo;ll also see how client developers can specify the data they want without worrying about the details of the REST API.</p>
+<p>Here&rsquo;s our GraphQL query to fetch order data.</p>
+<pre><code>{
+  order {
+    order_number
+    total
+  }
+}
+</code></pre><h2 id="no-orders-in-the-response">No orders in the response</h2>
+<p>We&rsquo;ll start with the <a href="https://graphablejsonapi.glitch.me/examples/example0">first example</a> which is an empty object with no order data, <code>{}</code>.</p>
+<p>Since there are no orders, the result for the query will be:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{ <span style="color:#e6db74">&#34;order&#34;</span><span style="color:#f92672">:</span> [] }
+</code></pre></div><p>Graphable JSON will handle <code>null</code> the same way, meaning we&rsquo;ll never have to worry about <code>null</code> and <code>undefined</code> values. The shape of the data will always be the same.</p>
+<h2 id="a-single-order-in-the-response">A single order in the response</h2>
+<p>The <a href="https://graphablejsonapi.glitch.me/examples/example1">second example</a> has a single order. The library will first look for a single value and yield that value if it exists.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;comment&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;A single embedded order object&#34;</span>,
+  <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/examples/example1&#34;</span>,
+  <span style="color:#e6db74">&#34;order&#34;</span><span style="color:#f92672">:</span> {
+    <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1000&#34;</span>,
+    <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1000&#34;</span>,
+    <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">150</span>,
+    <span style="color:#e6db74">&#34;unit&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;USD&#34;</span>
+  }
+}
+</code></pre></div><p>When we run our query, we get just the data we requested.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;order&#34;</span><span style="color:#f92672">:</span> [
+    {
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;1000&#34;</span>],
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">150</span>],
+    }
+  ]
+}
+</code></pre></div><p>Even though there was a single order, we see an array of <code>order</code> items in the result. There are a couple of things to mention about this before moving on.</p>
+<p>First, the Graphable JSON library makes use of <a href="https://jakearchibald.com/2017/async-iterators-and-generators/">asynchronous generators</a>. Without getting too far into those details, it means that it will return a function that can yield many values rather than returning a single value. This little piece of magic lets us treat zero values, single values, and—as we&rsquo;ll see in the next sections—multiple values the same way.</p>
+<p>Second, it may feel odd to have the singular word <code>order</code> referring to an array. It&rsquo;s best to think of each property as describing a relationship between the given object and the value or values of the object. The object returned can have zero or many <code>order</code> items, though there is only one concept of an <code>order</code> relationship in this context. Treating relationships this way let&rsquo;s us evolve the API and not break clients when we need to expand the number of related items.</p>
+<p>The goal is to return the same shape of the data in the client even though the API may change how that data is represented. Separating Graphable JSON&rsquo;s response from the representation of the API&rsquo;s data is the key to making this idea work.</p>
+<h2 id="multiple-orders-in-the-response">Multiple orders in the response</h2>
+<p>I&rsquo;ve shortened the <a href="https://graphablejsonapi.glitch.me/examples/example2">third example</a> for the case of brevity. It shows multiple orders in a single response.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;comment&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;All order objects embedded&#34;</span>,
+  <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/examples/example2&#34;</span>,
+  <span style="color:#e6db74">&#34;order&#34;</span><span style="color:#f92672">:</span> [
+    {
+      <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1000&#34;</span>,
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1000&#34;</span>,
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">150</span>,
+      <span style="color:#e6db74">&#34;unit&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;USD&#34;</span>
+    },
+    {
+      <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1001&#34;</span>,
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1001&#34;</span>,
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">25</span>,
+      <span style="color:#e6db74">&#34;unit&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;USD&#34;</span>
+    },
+  ]
+}
+</code></pre></div><p>As we would expect, we get the same shape as above, only with more orders.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;order&#34;</span><span style="color:#f92672">:</span> [
+    {
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;1000&#34;</span>],
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">150</span>],
+    },
+    {
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;1001&#34;</span>],
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">25</span>],
+    }
+  ]
+}
+</code></pre></div><h2 id="linked-orders">Linked orders</h2>
+<p>What happens when we want to give each order its own URL? How can we provide ways to cache all or parts of the data from the API? The way we do that is by <a href="https://restfuljson.org/">adding links in the responses</a> and letting the Graphable JSON client follow those links. Consider our &ldquo;single order&rdquo; example above. Instead of embedding the order, we can link it with an <code>order_url</code> property.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;comment&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Links to each order rather than embedding&#34;</span>,
+  <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/examples/example3&#34;</span>,
+  <span style="color:#e6db74">&#34;order_url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1000&#34;</span>
+}
+</code></pre></div><p>Graphable JSON would return the same response as the &ldquo;single order&rdquo; example. Here&rsquo;s how it works. The library first looks for <code>order</code>. If it&rsquo;s not found, it looks for either <code>order_url</code> or <code>orderUrl</code>. If found, it requests the link. In both cases, the result of the query is the same. This works for multiple links as well.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;comment&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Links to each order rather than embedding&#34;</span>,
+  <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/examples/example3&#34;</span>,
+  <span style="color:#e6db74">&#34;order_url&#34;</span><span style="color:#f92672">:</span> [
+    <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1000&#34;</span>,
+    <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1001&#34;</span>,
+    <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1002&#34;</span>,
+    <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1003&#34;</span>
+  ]
+}
+</code></pre></div><p>The library will request each <code>order</code> link and provide the response as if it were included.</p>
+<h2 id="collections-of-orders">Collections of orders</h2>
+<p>Lastly, there are times where we&rsquo;ll want to paginate data in the API. Most <a href="https://graphql.org/learn/pagination/">GraphQL approaches</a> require the consumer to deal with pagination in the query. Graphable JSON does pagination by looking for collections of data and following links if they exist—it happens automatically.</p>
+<p>In our <a href="https://graphablejsonapi.glitch.me/examples/example3">example</a>, if the <code>order</code> value contains an <code>$item</code> property, it will respond with each item and follow a <code>next</code> link if it exists. Here is a response with a link to an order, but this time it&rsquo;s to an order collection.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;comment&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Links to a paginated order collection&#34;</span>,
+  <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/examples/example4&#34;</span>,
+  <span style="color:#e6db74">&#34;order_url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/ordersCollection&#34;</span>
+}
+</code></pre></div><p>The linked order collection looks something liket his below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">{
+  <span style="color:#e6db74">&#34;$item&#34;</span><span style="color:#f92672">:</span> [
+    {
+      <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/orders/1000&#34;</span>,
+      <span style="color:#e6db74">&#34;order_number&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1000&#34;</span>,
+      <span style="color:#e6db74">&#34;total&#34;</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">150</span>,
+      <span style="color:#e6db74">&#34;unit&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;USD&#34;</span>
+    }
+  ],
+  <span style="color:#e6db74">&#34;next_url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;https://graphablejsonapi.glitch.me/ordersCollection?page=2&#34;</span>
+}
+</code></pre></div><p>The library will return all of the items then move on to the next page until there were no longer any <code>next</code> links. Like all the examples above, this results in the same shape of the data, all using the same query. All of this is hidden from the client developers.</p>
+<h1 id="the-benefits-of-this-approach">The benefits of this approach</h1>
+<p>Though Graphable JSON doesn&rsquo;t solve the problem of overfetching and underfetching, it does provide other benefits that may outweigh that issue.</p>
+<ol>
+<li>API designers can think about relationships of data rather than strict structures of data.</li>
+<li>API developers can evolve the API based on technical needs without breaking client implementations.</li>
+<li>API developers can optimize responses based on client needs.</li>
+<li>API consumers don&rsquo;t have to piece together resources to understand the interconnectedness of the API—the links show the way.</li>
+<li>Any data in the API can be given a URL, making it possible to refresh smaller batches of data later without requesting larger queries.</li>
+<li>Clients are able to cache data based on cache settings in the response. For the browser, this implementation comes for free.</li>
+</ol>
+<p>Graphable JSON is just a proof of concept. But maybe it will spark ideas for others. There are many benefits to REST, and we lose some of these benefits as we move to things like GraphQL. Maybe there are ways to get the best of both worlds.</p>
+<h1 id="lets-discuss">Let&rsquo;s discuss</h1>
+<p>If this idea is interesting to you and you&rsquo;d like to give some thoughts, you can find me on <a href="https://twitter.com/Stephen_Mizell">Twitter</a>. I have also cross-posted this article to <a href="https://dev.to/smizell/using-graphql-with-rest-apis-2c4k">dev.to</a> if you liked to write longer responses.</p>
+
+    </div>
+  </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

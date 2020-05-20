@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<link href="https://gmpg.org/xfn/11" rel="profile">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>
+    
+      Solving FizzBuzz with Hypermedia &middot; Stephen Mizell
+    
+  </title>
+
+<link rel="stylesheet" href="../../public/css/poole.css">
+<link rel="stylesheet" href="../../public/css/syntax.css">
+<link rel="stylesheet" href="../../public/css/lanyon.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../feed">
+</head>
+<body>
+
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<div class="sidebar" id="sidebar">
+<div class="sidebar-item">
+<p>I am Stephen Mizell, and this is my personal website.</p>
+</div>
+<nav class="sidebar-nav">
+<a class="sidebar-nav-item" href="solving-fizzbuzz-with-hypermedia.html">Home</a>
+<a class="sidebar-nav-item" href="../../about.html">About</a>
+<a class="sidebar-nav-item" href="../../projects.html">Projects</a>
+<a class="sidebar-nav-item" href="../../feed">Feed (Atom)</a>
+</nav>
+<div class="sidebar-item">
+<p>
+&copy; 2019. All rights reserved.
+</p>
+</div>
+</div>
+
+<div class="wrap">
+<div class="masthead">
+<div class="container">
+<h3 class="masthead-title">
+<a href="../../index.html" title="Home">Stephen Mizell</a>
+<small>Watching the world go by too quickly</small>
+</h3>
+</div>
+</div>
+<div class="container content">
+<div class="post">
+<h1 class="post-title">Solving FizzBuzz with Hypermedia</h1>
+<span class="post-date">26 Apr 2014</span>
+<p>I had some free time this last week and I decided to try to solve FizzBuzz with hypermedia. I thought I’d use it to show some of the benefits of using hypermedia, along with some of the downfalls of not using it.</p>
+<h2 id="first-what-is-fizzbuzz">First, What is FizzBuzz?</h2>
+<p>If you’re not familiar with FizzBuzz, here is the idea behind it (<a href="http://imranontech.com/2007/01/24/using-fizzbuzz-to-find-developers-who-grok-coding/">source</a>):</p>
+<blockquote>
+<p>Write a program that prints the numbers from 1 to 100. But for multiples of three print “Fizz” instead of the number and for the multiples of five print “Buzz”. For numbers which are multiples of both three and five print “FizzBuzz”.</p>
+</blockquote>
+<p>This problem is given to a lot of interviewees for jobs to make sure they can program, and it’s been <a href="https://rosettacode.org/wiki/FizzBuzz">solved using lots of languages</a>. I thought it’d be a fun exercise to see if I could solve it with a hypermedia API.</p>
+<h2 id="the-fizzbuzz-hypermedia-api">The FizzBuzz Hypermedia API</h2>
+<p>You can find the API <a href="https://fizzbuzzaas.herokuapp.com/">here</a>, which currently supports <a href="https://github.com/kevinswiber/siren">Siren</a> as the media type. The <a href="https://github.com/smizell/fizzbuzz-hypermedia-server">code behind the server</a> can be found on Github.</p>
+<p>Looking at the first response, you can see the URL to where you would go to begin the FizzBuzz, along with a couple of actions you could take. The idea behind hypermedia is that you let the server give the client directions on where it can go, rather than client having to know that itself. This is the main reason for all the hyperlinks and controls in the message.</p>
+<h2 id="hypermedia-library">Hypermedia Library</h2>
+<p>To get going on this, I first needed a general library that understands a Siren hypermedia message. I needed it to know how to traverse links and submit the actions in the message. I wanted a simple Python client for Siren to do this, but couldn’t find one, so <a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/siren.py">I made a basic one myself</a>. In a perfect world, this would already exist (also, I’d definitely not recommend using my code for anything of value).</p>
+<h2 id="the-fizzbuzz-hypermedia-client">The FizzBuzz Hypermedia Client</h2>
+<p>Since I now have something that can understand my hypermedia messages, I can start writing code to follow links through my FizzBuzz API. Here’s what I wrote initially (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-hypermedia1.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">siren</span> <span class="kn">import</span> <span class="n">SirenResource</span> <span class="k">as</span> <span class="n">Hyperclient</span>
+
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">"http://fizzbuzzaas.herokuapp.com"</span>
+
+<span class="k">def</span> <span class="nf">fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="p">):</span>
+    <span class="s">"""
+    Prints the fizzbuzz value and follows "next" links
+    """</span>
+    <span class="k">print</span> <span class="n">resource</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s">"value"</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">has_link</span><span class="p">(</span><span class="s">"next"</span><span class="p">):</span>
+        <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">follow_link</span><span class="p">(</span><span class="s">"next"</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">begin_fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="p">):</span>
+    <span class="s">"""
+    Follows the first link, then hands off to fizzbuzz
+    """</span>
+    <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">has_link</span><span class="p">(</span><span class="s">"first"</span><span class="p">):</span>
+        <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">follow_link</span><span class="p">(</span><span class="s">"first"</span><span class="p">))</span>
+
+<span class="n">root_resource</span> <span class="o">=</span> <span class="n">Hyperclient</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s">"/"</span><span class="p">)</span>
+<span class="n">begin_fizzbuzz</span><span class="p">(</span><span class="n">root_resource</span><span class="p">)</span>
+</code></pre></div></div>
+<p>It takes a resource, prints the fizzbuzz property <code class="highlighter-rouge">value</code>, sees if there is a link <code class="highlighter-rouge">next</code>. If there is one, it follows that link and does it all over again recursively until it doesn’t find a <code class="highlighter-rouge">next</code> resource.</p>
+<p>This example is really nothing special, but it shows some interesting aspects of hypermedia. First, it shows what happens when the client follows the hyperlinks given to it by the server. The server knows the next number and where to find it, and so it tells that to the client. There is really no need for the client to need to figure that out.</p>
+<p>Next, it shows how evolvable an API can be. The client code is not tied to specific URLs, nor is it tied to any logic for following links. As the designer of the API, I’m free to change up the API without breaking the client in those respects.</p>
+<h2 id="fizzbuzz-client-without-hypermedia">FizzBuzz Client Without Hypermedia</h2>
+<p>Consider how this would be handled if hypermedia was ignored (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-non-hypermedia1.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">"http://fizzbuzzaas.herokuapp.com"</span>
+
+<span class="k">def</span> <span class="nf">fizzbuzz</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">"/fizzbuzz"</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">response_json</span><span class="p">[</span><span class="s">"properties"</span><span class="p">][</span><span class="s">"value"</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">fizzbuzz</span><span class="p">({</span><span class="s">"number"</span><span class="p">:</span> <span class="n">number</span> <span class="p">})</span>
+</code></pre></div></div>
+<p>Notice some of the shortcomings of not using the hypermedia. For one, my code is tied directly to URLs, so those can never change. Second, my client now has to understand the logic of where the FizzBuzz starts, where the next number is, and how to interact with a specific Siren message. There is really very little that could change in the API that would not break the client.</p>
+<h2 id="well-so-what">Well, So What?</h2>
+<p>At this point, the FizzBuzz code that ignores the hypermedia seems a lot simpler and more straightforward. What, then, are the real benefits of using the hyperlinks?</p>
+<p>If you looked at the first response from the API, you saw an action called “Custom FizzBuzz.” The non-hypermedia client will be unable to use most of the options of this action, such as <code class="highlighter-rouge">startsAt</code>, <code class="highlighter-rouge">endsAt</code>, and <code class="highlighter-rouge">add</code>. This is because these fields are used by the API to tell the client what is next, but our non-hypermedia has to track these on its own.</p>
+<h3 id="non-hypermedia-example">Non-Hypermedia Example</h3>
+<p>Let’s say I wanted my non-hypermedia client to start at four, add two each time, and stop at 20. Here’s some code to accomplish this (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-non-hypermedia2.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">"http://fizzbuzzaas.herokuapp.com"</span>
+<span class="n">STARTS_AT</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ENDS_AT</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">ADD</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">fizzbuzz</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">"/fizzbuzz"</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">response_json</span><span class="p">[</span><span class="s">"properties"</span><span class="p">][</span><span class="s">"value"</span><span class="p">]</span>
+
+    <span class="n">params</span><span class="p">[</span><span class="s">"number"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ADD</span>
+
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s">"number"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ENDS_AT</span><span class="p">:</span>
+        <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="n">fizzbuzz</span><span class="p">({</span> <span class="s">"number"</span><span class="p">:</span> <span class="n">STARTS_AT</span> <span class="p">})</span>
+</code></pre></div></div>
+<p>In addition to building the URLs, as mentioned before, this approach requires this non-hypermedia client to duplicate some work that the API is already doing:</p>
+<ol>
+<li>It has to have the logic for adding numbers to get the next number</li>
+<li>It has to keep track of where to end the sequence</li>
+</ol>
+<p>Not only are we duplicating logic, we are also tightly coupling our client to our API.</p>
+<h3 id="same-example-in-hypermedia">Same Example in Hypermedia</h3>
+<p>For my hypermedia client, I’ll add in a method to handle this new custom action, then pass some params to it (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-hypermedia2.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># All other code stays the same</span>
+<span class="k">def</span> <span class="nf">custom_fizzbuzz</span><span class="p">(</span><span class="n">root_resource</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="s">"""
+    Submits actions for custom fizzbuzz
+    """</span>
+    <span class="n">resource</span> <span class="o">=</span> <span class="n">root_resource</span><span class="o">.</span><span class="n">take_action</span><span class="p">(</span><span class="s">"custom-fizzbuzz"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+    <span class="n">begin_fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+
+<span class="n">root_resource</span> <span class="o">=</span> <span class="n">Hyperclient</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s">"/"</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s">"startsAt"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">"endsAt"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s">"add"</span><span class="p">:</span> <span class="mi">2</span> <span class="p">}</span>
+<span class="n">custom_fizzbuzz</span><span class="p">(</span><span class="n">root_resource</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div></div>
+<p>I added about four lines of code to get the functionality to handle this custom fizzbuzz action, though none of these lines resemble the non-hypermedia client where it was adding numbers and figuring out if it was at the end.</p>
+<h2 id="embedding-resources-instead-of-links">Embedding Resources Instead of Links</h2>
+<p>This is where the hypermedia client is really going to shine. Let’s say as the API designer, I see that people are making 100 requests to solve their fizzbuzz problems, so I decide to provide a way for people to request embedded resources and reduce the number of their requests. From the example, this can be accomplished through the <code class="highlighter-rouge">embed</code> field on the custom fizzbuzz action.</p>
+<p>To see where the magic happens under the hood, look at the code from the Siren library, and you’ll see a <code class="highlighter-rouge">follow_link</code> method that looks like this (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/siren.py#L68-L82">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">follow_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link_rel</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="s">"""
+    Follow a link to a new resource or return embedded
+    """</span>
+    <span class="c"># If the resource is embedded, use that</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_embedded</span><span class="p">(</span><span class="n">link_rel</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SirenEmbedded</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedded</span><span class="p">(</span><span class="n">link_rel</span><span class="p">))</span>
+
+    <span class="c"># If the resource is linked, return a new resource</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">link_rel</span> <span class="ow">in</span> <span class="n">link</span><span class="p">[</span><span class="s">"rel"</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">SirenResource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="n">link</span><span class="p">[</span><span class="s">"href"</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="c"># Nothing was found</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</code></pre></div></div>
+<p>This says, if the resource is embedded, use it, otherwise, follow the link. To make this work for my hypermedia client, I change the <code class="highlighter-rouge">params</code> to look like this (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-hypermedia3.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># All other code stays the same</span>
+<span class="n">root_resource</span> <span class="o">=</span> <span class="n">Hyperclient</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s">"/"</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s">"embed"</span><span class="p">:</span> <span class="bp">True</span> <span class="p">}</span>
+<span class="n">custom_fizzbuzz</span><span class="p">(</span><span class="n">root_resource</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Magically, the number of requests drops from 100 to just two.</p>
+<p>Now, I’m a little reluctant to write an example of how the non-hypermedia client would handle this because this really is a feature of the hypermedia format, Siren, that I’m using. I’ll go ahead and do it anyway, though (<a href="https://github.com/smizell/fizzbuzz-hypermedia-client/blob/master/fizzbuzz-non-hypermedia3.py">source</a>):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">"http://fizzbuzzaas.herokuapp.com"</span>
+<span class="n">STARTS_AT</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ENDS_AT</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">ADD</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">resource</span><span class="p">[</span><span class="s">"properties"</span><span class="p">][</span><span class="s">"value"</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">"entities"</span> <span class="ow">in</span> <span class="n">resource</span><span class="p">:</span>
+        <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">resource</span><span class="p">[</span><span class="s">"entities"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">get_embedded_fizzbuzz</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">params</span><span class="p">[</span><span class="s">"embed"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">"/fizzbuzz"</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">response_json</span><span class="p">[</span><span class="s">"entities"</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">get_embedded_fizzbuzz</span><span class="p">({</span><span class="s">"number"</span><span class="p">:</span> <span class="n">STARTS_AT</span><span class="p">,</span> <span class="s">"endsAt"</span><span class="p">:</span> <span class="n">ENDS_AT</span><span class="p">,</span>
+                       <span class="s">"add"</span><span class="p">:</span> <span class="n">ADD</span><span class="p">,</span> <span class="s">"firstNumber"</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+</code></pre></div></div>
+<p>Even though this client benefited greatly from the hypermedia aspects of the API, it still required a total rewrite of the client, whereas the hypermedia client just worked.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Hopefully this shows some of the benefits of hypermedia in your API and client. It’s a simple example, but it shows how evolvable the API and client can be when using hypermedia in the API.</p>
+<p>I also wanted to mention a few takeaways I had from this little experiment.</p>
+<ol>
+<li>As I was building the non-hypermedia client, it felt like I was building the same functionality as my Siren hypermedia library, just in a way that coupled it with my domain logic.</li>
+<li>Just about every step in the process, I had to rewrite my non-hypermedia code. It felt like ignoring the hypermedia lead to some very short-sighted code.</li>
+<li>As I wrote the hypermedia client, I was more focused on my current state and the transitions to get to other states. My focus was more on how the API was designed. In my non-hypermedia client, I was just focused on getting data I needed.</li>
+</ol>
+<p>In the end, it takes some work to get hypermedia right, but it seems worth it in the long run.</p>
+</div>
+</div>
+</div>
+<label for="sidebar-checkbox" class="sidebar-toggle"></label>
+<script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48628301-1', 'smizell.com');
+      ga('send', 'pageview');
+    </script>
+</body>
+</html>

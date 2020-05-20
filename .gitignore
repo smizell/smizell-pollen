@@ -1,0 +1,10 @@
+site-dist
+dist
+site/**/*.rkt~
+site/**/*.p~
+site/**/*.pm~
+site/**/*.html
+site/**/*.css
+site/**/*.xml
+site/**/compiled/
+.DS_Store
