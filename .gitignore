@@ -7,4 +7,8 @@ site/**/*.html
 site/**/*.css
 site/**/*.xml
 site/**/compiled/
+build.zip
 .DS_Store
+
+# Local Netlify folder
+.netlify

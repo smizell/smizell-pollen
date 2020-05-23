@@ -15,3 +15,9 @@ build-site:
 	cp -R site-dist/* dist/
 
 build: reset copy-archive build-site
+
+deploy-preview: build
+	netlify deploy --dir=dist
+
+deploy: build
+	netlify deploy --dir=dist --prod
