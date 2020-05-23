@@ -1,3 +1,6 @@
+develop:
+	raco pollen start site
+
 reset:
 	rm -rf dist/
 	mkdir dist/

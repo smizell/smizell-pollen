@@ -4,10 +4,11 @@
     CLOSED: [2020-05-23 Sat 12:19]
 *** DONE Update DNS
     CLOSED: [2020-05-23 Sat 12:24]
+*** DONE Now page
+    CLOSED: [2020-05-23 Sat 14:27]
+*** DONE Last updated feature
+    CLOSED: [2020-05-23 Sat 14:27]
 *** TODO Very minimal layout
-** Soon
-*** Last updated feature
-*** Now page
+*** Unblog post
 *** About page
 *** Colophon
-*** Unblog post

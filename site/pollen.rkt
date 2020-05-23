@@ -1,15 +1,32 @@
 #lang racket/base
 
-(require racket/list)
+(require racket/date
+         racket/list
+         racket/function
+         pollen/decode
+         threading
+         txexpr)
 
-(provide root
-         list-links)
+(provide (all-defined-out))
 
-(define (root . xs)
-  `(main ,@xs))
+(define (root . items)
+  (decode (txexpr 'main '() items)
+          #:txexpr-elements-proc element-handler
+          #:block-txexpr-proc (compose1 wrap-hanging-quotes)
+          #:string-proc (compose1 smart-quotes smart-dashes)
+          #:exclude-tags '(style script)))
+
+(define (element-handler xs)
+  ; Using identity function to ignore line breaks
+  (decode-paragraphs xs #:linebreak-proc identity))
 
 (define (list-links ls)
   `(ul ,@(map (lambda (l)
                 `(li (a ((href ,(second l))) ,(first l)))) ls)))
 
-
+(define (last-modified metas)
+  (~> metas
+      (hash-ref 'here-path)
+      file-or-directory-modify-seconds
+      seconds->date
+      date->string))
