@@ -23,3 +23,5 @@ Her presentation and the book have both had lots of interesting observations and
 ◊hr{}
 
 Last modified: ◊(last-modified metas)
+
+This is a ◊a[#:href "https://nownownow.com/about"]{Now page}.

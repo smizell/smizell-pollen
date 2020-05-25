@@ -10,7 +10,7 @@
 
     
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:image" content="https://smizell.me/images/using-graphql-with-rest-apis.png">
+        <meta name="twitter:image" content="https://smizell.com/images/using-graphql-with-rest-apis.png">
         <meta name="twitter:image:alt" content="Using GraphQL With REST APIs">
     
 
@@ -40,7 +40,7 @@
     <h2 class="f4 gray normal">March 20, 2019</h2>
     
     <div class="mt4 mt5-ns">
-      <p><a href="https://smizell.me/micro/2019/02/why-people-like-graphql/">People choose GraphQL</a> because of all the details it lets them forget about. It&rsquo;s tough to go back to modern REST approaches after working with the powerful patterns and well-built tools of the GraphQL ecosystem. But maybe we don&rsquo;t have to choose between GraphQL and REST. Maybe we can get the benefits of both approaches.</p>
+      <p><a href="https://smizell.com/micro/2019/02/why-people-like-graphql/">People choose GraphQL</a> because of all the details it lets them forget about. It&rsquo;s tough to go back to modern REST approaches after working with the powerful patterns and well-built tools of the GraphQL ecosystem. But maybe we don&rsquo;t have to choose between GraphQL and REST. Maybe we can get the benefits of both approaches.</p>
 <p>To explore this, I&rsquo;ve worked on a proof of concept. I called it <a href="https://github.com/smizell/graphablejson">Graphable JSON</a>. It&rsquo;s a JavaScript library that takes a GraphQL query and lazily fetches all the requested data from a REST API by following links. It allows API consumers to move beyond resources, URLs, HTTP methods, and status codes by specifying their required data in GraphQL&rsquo;s query syntax. All of this happens in the client rather than sending the query to an API somewhere. This is an important distinction to remember.</p>
 <h1 id="an-example-of-how-it-works">An example of how it works</h1>
 <p>I feel it&rsquo;s easiest to explain this approach by way of examples. We&rsquo;ll use an <a href="https://graphablejsonapi.glitch.me/">order API</a> for these examples, and we&rsquo;ll write a GraphQL query to fetch data from it. The API is a REST API with no GraphQL endpoint, so the Graphable JSON library will have to figure out how to get the data on its own.</p>
