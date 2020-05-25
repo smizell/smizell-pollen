@@ -25,7 +25,8 @@ deploy-preview: build
 	netlify deploy --dir=dist
 
 deploy: build
+	git checkout master
+	git pull
 	netlify deploy --dir=dist --prod
-	# Commit and push changes if I haven't already
 	git commit -a -m "Deploy `date +%F-%T`"
 	git push origin master
