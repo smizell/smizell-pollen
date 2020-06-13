@@ -30,3 +30,6 @@
       file-or-directory-modify-seconds
       seconds->date
       date->string))
+
+(define (masthead title)
+  `(h1 ((class "masthead")) ,title))

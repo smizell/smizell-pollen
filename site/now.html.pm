@@ -1,8 +1,7 @@
 #lang pollen/markup
+◊(define-meta title "Now")
 
-◊a[#:href "/"]{Home}
-
-◊h1{Now}
+◊masthead{Now}
 
 What's going on now?
 
@@ -20,8 +19,8 @@ Her presentation and the book have both had lots of interesting observations and
 
 ◊em{What We Do in the Shadows}: Weird, funny, and kind of gross. But fun--kind of.
 
-◊hr{}
-
+◊footer{
 Last modified: ◊(last-modified metas)
 
 This is a ◊a[#:href "https://nownownow.com/about"]{Now page}.
+}
