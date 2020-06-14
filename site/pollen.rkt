@@ -14,7 +14,7 @@
           #:txexpr-elements-proc element-handler
           #:block-txexpr-proc (compose1 wrap-hanging-quotes)
           #:string-proc (compose1 smart-quotes smart-dashes)
-          #:exclude-tags '(style script)))
+          #:exclude-tags '(style script ul ol)))
 
 (define (element-handler xs)
   ; Using identity function to ignore line breaks
