@@ -11,10 +11,8 @@
     <link rel="stylesheet" type="text/css" href="/assets/styles.css">
   </head>
   <body>
+    <nav><a rel="home" href="/">Stephen Mizell</a></nav>
     <main>
-      ◊when/splice[(not (equal? page-title "Home"))]{
-        <nav><a rel="home" href="/">Stephen Mizell</a></nav>
-      }
       ◊(->html doc)
     </main>
   </body>

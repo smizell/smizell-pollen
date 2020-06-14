@@ -10,7 +10,7 @@
 (provide (all-defined-out))
 
 (define (root . items)
-  (decode (txexpr 'main '() items)
+  (decode (txexpr 'div '() items)
           #:txexpr-elements-proc element-handler
           #:block-txexpr-proc (compose1 wrap-hanging-quotes)
           #:string-proc (compose1 smart-quotes smart-dashes)
